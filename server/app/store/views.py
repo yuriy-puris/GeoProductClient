@@ -43,13 +43,17 @@ class ParseLocationView(APIView):
         }
         nearest_address = service_parse_location.parse_location(test_coord)
         list_address = [i[0] for i in nearest_address]
-        shop_list = []
+        shop_list = [4]
 
         for point in list_address:
             address = Address.objects.filter(id=point).values_list('shop_id_id')
             shop_list.append(address[0][0])
         
         print(shop_list)
+        # for shop in shop_list:
+
         # products = service_search_parser.parse_shop(shop_list[0], 'https://allo.ua/ua/catalogsearch/result/?q=apple')
-        products = service_search_parser.parse_shop(5, 'https://www.foxtrot.com.ua/ru/search?query=apple')
+        # products = service_search_parser.parse_shop(5, 'https://www.foxtrot.com.ua/ru/search?query=apple')
+        products = service_search_parser.parse_shop(2, 'https://www.moyo.ua/search/new/?q=apple')
+
         return Response(products)

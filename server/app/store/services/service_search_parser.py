@@ -9,6 +9,7 @@ from . import service_headers
 COUNT_PRODUCTS_SHOP = 3
 
 SHOPS_PRODUCT_LIST_CLASSES = {
+  2: 'product-tile_container',
   4: 'products-grid',
   5: 'promotions-items-wrapper'
 }
@@ -24,6 +25,8 @@ def get_category(shop_id, html):
   return content_wrap
 
 def parse_product_list(shop_id, content):
+  if shop_id == 2:
+    get_product_list_shop_2(content)
   if shop_id == 4:
     get_product_list_shop_4(content)
   if shop_id == 5:
@@ -54,14 +57,13 @@ def get_product_list_shop_4(content):
   return products
 
 def get_product_list_shop_5(content):
-  grid_list = content.find_all('div', class_=['listing-item', 'product-item'])
-  print(grid_list)
+  grid_list = content.find_all('div', class_=['listing-item', 'product-item', 'simple'])
   products = []
 
   for item in grid_list[:COUNT_PRODUCTS_SHOP]:
     item_attrs = item.attrs
     item_img = item.find('img', class_='lazy-category').attrs
-    img = item_img['src']
+    img = item_img['data-src']
     title = item_attrs['data-title']
     price = item_attrs['data-price']
 
@@ -72,8 +74,29 @@ def get_product_list_shop_5(content):
     }
 
     products.append(product)
-  print('products555', products)
   return products
+
+def get_product_list_shop_2(content):
+  grid_list = content.find_all('section', class_='product-tile_product')
+  products = []
+
+  for item in grid_list[:COUNT_PRODUCTS_SHOP]:
+    item_attrs = item.attrs
+    img_attrs = item.find('figure', class_='goods_image').attrs
+    img = img_attrs['data-imagesrc']
+    title = item_attrs['data-name']
+    price = item_attrs['data-price']
+
+    product = {
+      'img':   img,
+      'title': title,
+      'price': price
+    }
+
+    products.append(product)
+  print('products222', products)
+  return products
+
 
 def parse_shop(shop_id, url):
   html = get_response(url)
