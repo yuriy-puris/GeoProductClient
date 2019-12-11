@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from .models import Address, Coordinates
 from .serializers import AddressSerializer, CoordinatesSerializer
 from . import services
-from .services import service_address, service_coordinate, service_parse_location
+from .services import service_address, service_coordinate, service_parse_location, service_search_parser
 
 class AddressView(APIView):
     
@@ -33,11 +33,15 @@ class CoordinatesView(APIView):
 
 class ParseLocationView(APIView):
 
-    def get(self, request):
-        print(request)
+    # def get(self, request):
+    #     print(request)
     
-    def post(self, request):
-        nearest_address = service_parse_location.parse_location(request.data)
+    def get(self, request):
+        test_coord = { 
+            'lat': 50.0062302,
+            'lng': 36.2343553 
+        }
+        nearest_address = service_parse_location.parse_location(test_coord)
         list_address = [i[0] for i in nearest_address]
         shop_list = []
 
@@ -46,4 +50,6 @@ class ParseLocationView(APIView):
             shop_list.append(address[0][0])
         
         print(shop_list)
-        return Response('success')
+        # products = service_search_parser.parse_shop(shop_list[0], 'https://allo.ua/ua/catalogsearch/result/?q=apple')
+        products = service_search_parser.parse_shop(5, 'https://www.foxtrot.com.ua/ru/search?query=apple')
+        return Response(products)
