@@ -10,8 +10,8 @@ COUNT_PRODUCTS_SHOP = 3
 
 SHOPS_PRODUCT_LIST_CLASSES = {
   2: 'product-tile_container',
-  4: 'products-grid',
-  5: 'promotions-items-wrapper'
+  4: 'category-products',
+  5: 'listing-container'
 }
 
 def get_response(url):
@@ -26,13 +26,13 @@ def get_category(shop_id, html):
 
 def parse_product_list(shop_id, content):
   if shop_id == 2:
-    get_product_list_shop_2(content)
+    return get_product_list_shop_2(shop_id, content)
   if shop_id == 4:
-    get_product_list_shop_4(content)
+    return get_product_list_shop_4(shop_id, content)
   if shop_id == 5:
-    get_product_list_shop_5(content)
+    return get_product_list_shop_5(shop_id, content)
 
-def get_product_list_shop_4(content):
+def get_product_list_shop_4(shop_id, content):
   grid_list = content.find_all('li', class_='item')
   products = []
 
@@ -43,20 +43,20 @@ def get_product_list_shop_4(content):
 
     title = item.find_all('div', class_='product-name-container')[0].text.strip()
     # price = item.find_all('span', class_='price')
-    price_new = item.find('span', class_='new_sum').text.strip().replace(u"\xa0", u".")
-    price_old = item.find('span', class_='sum').text.strip().replace(u"\xa0", u".")
+    # price_new = item.find('span', class_='new_sum').text.strip().replace(u"\xa0", u".")
+    price = item.find('span', class_='sum').text.strip().replace(u"\xa0", u".")
     # print(item.find('span', class_='new_sum'))
     product = {
+      'shop_id': shop_id,
       'img':   img_url,
       'title': title,
-      'price': price_new
+      'price': price
     }
-
     products.append(product)
-  print('products', products)
+
   return products
 
-def get_product_list_shop_5(content):
+def get_product_list_shop_5(shop_id, content):
   grid_list = content.find_all('div', class_=['listing-item', 'product-item', 'simple'])
   products = []
 
@@ -68,6 +68,7 @@ def get_product_list_shop_5(content):
     price = item_attrs['data-price']
 
     product = {
+      'shop_id': shop_id,
       'img':   img,
       'title': title,
       'price': price
@@ -76,7 +77,7 @@ def get_product_list_shop_5(content):
     products.append(product)
   return products
 
-def get_product_list_shop_2(content):
+def get_product_list_shop_2(shop_id, content):
   grid_list = content.find_all('section', class_='product-tile_product')
   products = []
 
@@ -88,13 +89,13 @@ def get_product_list_shop_2(content):
     price = item_attrs['data-price']
 
     product = {
+      'shop_id': shop_id,
       'img':   img,
       'title': title,
       'price': price
     }
 
     products.append(product)
-  print('products222', products)
   return products
 
 

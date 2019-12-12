@@ -1,11 +1,17 @@
 import requests
+
+import asyncio
+import aiohttp
+
+import itertools
+
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import Address, Coordinates
+from .models import Shop, Address, Coordinates
 from .serializers import AddressSerializer, CoordinatesSerializer
 from . import services
 from .services import service_address, service_coordinate, service_parse_location, service_search_parser
@@ -37,23 +43,47 @@ class ParseLocationView(APIView):
     #     print(request)
     
     def get(self, request):
-        test_coord = { 
-            'lat': 50.0062302,
-            'lng': 36.2343553 
-        }
-        nearest_address = service_parse_location.parse_location(test_coord)
-        list_address = [i[0] for i in nearest_address]
-        shop_list = [4]
-
-        for point in list_address:
-            address = Address.objects.filter(id=point).values_list('shop_id_id')
-            shop_list.append(address[0][0])
+        # СДЕЛАТЬ ОБРАБОТКУ ОШИБОК
+        # ПРОВЕРИТЬ SHOP_LIST НА ДУБЛИКАТЫ
+        # ЕСЛИ ВВЕДЕНО НЕКОРРЕКТНОЕ НАЗВАНИЕ
+        # ЕСЛИ ПРИШЁЛ НЕУСПЕШНЫЙ ОТВЕТ ПРИ ЗАПРОСЕ
+        # ЕСЛИ ОШИБКА ВОЗНИКЛА ВО ВРЕМЯ ПАРСИНГА (НЕ ТОТ КЛАСС И Т.Д.)
+        # протестировать различные ключи запросов (Apple, Apple X, note 9)
         
-        print(shop_list)
-        # for shop in shop_list:
+        # test_coord = { 
+        #     'lat': 50.0062302,
+        #     'lng': 36.2343553 
+        # }
+        # nearest_address = service_parse_location.parse_location(test_coord)
+        # list_address = [i[0] for i in nearest_address]
+        # shop_list = [4]
 
-        # products = service_search_parser.parse_shop(shop_list[0], 'https://allo.ua/ua/catalogsearch/result/?q=apple')
-        # products = service_search_parser.parse_shop(5, 'https://www.foxtrot.com.ua/ru/search?query=apple')
-        products = service_search_parser.parse_shop(2, 'https://www.moyo.ua/search/new/?q=apple')
+        # for point in list_address:
+            # address = Address.objects.filter(id=point).values_list('shop_id_id')
+        #     shop_list.append(address[0][0])
+        
+        
+        #  dataSource = [
+        #     'Address', [ { 'address', 'shop' } ]
+        #     'Records': [ {'Products ...'} ]
+        # ]
 
-        return Response(products)
+        query = 'apple'
+        shop_list = [2,4,5]
+        shop_requests = []
+        
+        for shop_id in shop_list:
+            search_request = Shop.objects.filter(id=shop_id).values_list('search_request')
+            shop_info = [shop_id, search_request[0][0]]
+            shop_requests.append(tuple(shop_info))
+        
+        def call_url(shop):
+            request_query = shop[1] + 'samsung note 9'
+            response = service_search_parser.parse_shop(shop[0], request_query)
+            return response
+
+        futures = [call_url(shop) for shop in shop_requests]
+        flat_structure = list(itertools.chain.from_iterable(futures))
+
+        return Response(flat_structure)
+
