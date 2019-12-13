@@ -7,8 +7,8 @@ const ParamLocationModel = () => {
   return {
     lat: '',
     lon: '',
-  }
-}
+  };
+};
 
 export default new Vuex.Store({
   state: {
@@ -17,7 +17,7 @@ export default new Vuex.Store({
   mutations: {
     setLocation(state, {item}) {
       state.currentLocation = item;
-    }
+    },
   },
   actions: {
   },

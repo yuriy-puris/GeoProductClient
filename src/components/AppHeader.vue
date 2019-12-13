@@ -11,51 +11,48 @@
 </template>
 
 <script lang="ts">
-import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Component, Vue } from 'vue-property-decorator';
-import axios from 'axios';
+import { State, Action, Getter, Mutation } from 'vuex-class';
 
-@Component({
-
-    mounted (): void {
-        this.locationUser();
-    }
-    
-})
+@Component
 export default class AppHeader extends Vue {
-    
-    location: string = '';
-    geocoderApi: string = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
-    geocoderApiKey: string = '&key=AIzaSyDybVMhuvhySYB54emzIuWjt1S44P-Z_hg';
-    
-    locationUser(): void {
-        let _self = this;
-        if ("geolocation" in navigator) {
+    private location: string = '';
+    private geocoderApi: string = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=';
+    private geocoderApiKey: string = '&key=AIzaSyDybVMhuvhySYB54emzIuWjt1S44P-Z_hg';
+
+    public locationUser(): void {
+        const $self = this;
+        if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition(
                 function success(position) {
-                    _self.definedAddress({ lat: position.coords.latitude, lng: position.coords.longitude });
+                    $self.definedAddress({ lat: position.coords.latitude, lng: position.coords.longitude });
                 },
+                // tslint:disable-next-line:no-shadowed-variable
                 function error(error) {
                     console.log(error);
-                }
-               )
+                },
+               );
         } else {
-            console.log('geolocation not supported')
+            console.log('geolocation not supported');
         }
     }
 
-    definedAddress(Coordinates: any): void {
-        let latlng = `${Coordinates.lat},${Coordinates.lng}`;
-        axios
+    private mounted(): void {
+        this.locationUser();
+    }
+
+    private definedAddress(Coordinates: any): void {
+        const latlng = `${Coordinates.lat},${Coordinates.lng}`;
+        this.$http
             .get(`${this.geocoderApi}${latlng}${this.geocoderApiKey}`)
-            .then(response => {
+            .then((response: any) => {
                 if ( response.data.status === 'OK' ) {
-                    let location = response.data.results[0].formatted_address.split(',').slice(0,-3);
+                    const location = response.data.results[0].formatted_address.split(',').slice(0, -3);
                     this.location = location.join(',');
                     this.$store.commit('setLocation', { item: { lat: Coordinates.lat, lng: Coordinates.lng} });
                 }
-            })  
-            .catch(error => {
+            })
+            .catch((error: any) => {
                 console.log(error);
             });
     }
@@ -65,3 +62,11 @@ export default class AppHeader extends Vue {
 }
 
 </script>
+
+<style lang="scss">
+#header {
+    .md-title {
+        color: #000
+    }
+}
+</style>
