@@ -3,8 +3,7 @@
     <div class="page-container">
       <Search @searchProduct="searchProduct"/>
       <ProductsGrid 
-        :query="query"
-      />
+        ref="productsGrid" />
     </div>
   </div>
 </template>
@@ -12,7 +11,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Search from '@/components/Search.vue';
-import ProductsGrid from '@/components/ProductsGrid.vue';
+import ProductsGrid from '@/components/Grid/ProductsGrid.vue';
+
 
 @Component({
   components: {
@@ -25,7 +25,7 @@ export default class Home extends Vue {
   public query: string = '';
 
   public searchProduct(searchQuery: string): void {
-    this.query = searchQuery;
+    (this.$refs.productsGrid as any ).search(searchQuery);
   }
 }
 

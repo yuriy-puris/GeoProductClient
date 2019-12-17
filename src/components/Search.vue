@@ -6,6 +6,12 @@
                     class="input-group-field">
                     <label>Пожалуйста, введите название товара ...</label>
                     <md-input v-model="query"></md-input>
+                    <button
+                        v-show="visibleClear" 
+                        class="icon-close"
+                        @click="clear">
+                        <md-icon>close</md-icon>
+                    </button>
                     <md-button 
                         class="md-raised" 
                         @click="search">
@@ -18,16 +24,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import { Component, Watch, Emit, Vue } from 'vue-property-decorator';
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { mapState } from 'vuex';
 
 @Component
 export default class Search extends Vue {
     private query: string = '';
+    private visibleClear: boolean = false;
+
+    @Watch('query')
+    public onQueryChanged() {
+        this.visibleClear = (this.query.length > 0) ? true : false;
+    }
 
     public search(): void {
         this.$emit('searchProduct', this.query);
+    }
+
+    public clear(): void {
+        this.query = '';
     }
 
 }
@@ -36,6 +52,8 @@ export default class Search extends Vue {
 
 <style lang="scss">
     .search-holder {
+        max-width: 70%;
+        margin: 0 auto;
         .md-field {
             align-items: center;
             &:not(.md-focused) {
@@ -47,14 +65,25 @@ export default class Search extends Vue {
         .input-group {
             &.md-focused {
                 label {
+                    color: #fff;
                     top: 0;
-                    color: #448aff;
+                    opacity: .4;
                     font-size: 12px;
                 }
             }
         }
-        .md-input {
-            text-align: center;
+        .icon-close {
+            background: transparent;
+            outline: none;
+            border-color: transparent;
+            padding: 0;
+            cursor: pointer;
+            i {
+                font-size: 16px!important;
+            }
+        }
+        .md-button {
+            margin: 6px 0;
         }
     }
 </style>

@@ -1,6 +1,7 @@
 <template>
   <div class="product-container">
-    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Accusantium repudiandae dignissimos officia? Omnis quidem accusamus sunt fugiat et. Quas veritatis sint earum eos quos qui aspernatur beatae illo amet ullam vero aliquam est, repellat illum maxime, corrupti optio quo enim atque! Incidunt cupiditate eius veritatis nesciunt dolor nihil totam molestiae, iusto deleniti quaerat, voluptates mollitia quasi dignissimos soluta. Voluptas fuga cumque fugiat similique, veniam nemo. Corporis voluptatibus tempora magni eaque suscipit debitis beatae expedita reprehenderit animi totam. Asperiores doloremque earum reiciendis, odit facere sit debitis, ratione autem consequuntur eius reprehenderit expedita quam porro eaque fuga commodi, ab molestiae? Eos, magni.
+    <FilterShop 
+      :dataSource=['This', 'is', 'Bob'] />
     <div
       v-for="(product, idx) in products"
       :key="idx" 
@@ -24,7 +25,12 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { mapState } from 'vuex';
 
+import FilterShop from '@/components/Grid/Filters/FilterShop.vue';
+
 @Component({
+  components: {
+    FilterShop,
+  },
   props: {
     query: {
       type: String,
@@ -43,10 +49,9 @@ export default class ProductsGrid extends Vue {
   private products = [];
   private shops = [];
 
-  @Watch('query')
-  public search(): void {
+  public search(Query: string): void {
     const data = {
-        search_query: this.query,
+        search_query: Query,
         user_location: this.location,
     };
     this.$http
@@ -68,14 +73,20 @@ export default class ProductsGrid extends Vue {
   justify-content: center;
   flex-wrap: wrap;
   .product-item {
-    max-width: 220px;
-    background: #fff;
+    font-size: 12px;
+    max-width: 160px;
     border-radius: 5px;
     padding: 5px;
-    margin: 0 5px 15px;
+    margin: 0 20px 20px;
+    color: #fff;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
   }
   .product-img {
     margin: 0 0 20px;
+    border-radius: 10px;
+    overflow: hidden;
   }
   .product-title {
     margin: 0 0 15px;

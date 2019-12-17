@@ -66,7 +66,7 @@ export default class AppHeader extends Vue {
 <style lang="scss">
 #header {
     .md-title {
-        color: #000
+        // color: #000
     }
 }
 </style>
