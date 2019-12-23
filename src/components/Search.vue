@@ -1,6 +1,6 @@
 <template>
     <div class="search-holder">
-        <form v-on:submit.prevent="search">
+        <form @submit.prevent="() => false">
             <div :class="['input-group', {'md-focused': query}]">
                 <md-field 
                     class="input-group-field">
@@ -12,12 +12,14 @@
                         @click="clear">
                         <md-icon>close</md-icon>
                     </button>
-                    <md-button 
+                    <md-button
+                        type="submit"
                         class="md-raised" 
                         @click="search">
                         <md-icon>search</md-icon>
                     </md-button>
                 </md-field>
+                <p v-if="!isValid" class="error-tip">{{ errorMessage }}</p>
             </div>
         </form>
     </div>
@@ -32,18 +34,28 @@ import { mapState } from 'vuex';
 export default class Search extends Vue {
     private query: string = '';
     private visibleClear: boolean = false;
+    private isValid: boolean = true;
+    private errorMessage: string = 'Уточните пожалуйста адрес';
 
     @Watch('query')
     public onQueryChanged() {
         this.visibleClear = (this.query.length > 0) ? true : false;
-    }
-
-    public search(): void {
-        this.$emit('searchProduct', this.query);
+        if ( this.query !== '' ) {
+            this.isValid = true;
+        }
     }
 
     public clear(): void {
         this.query = '';
+        this.$emit('clearProduct');
+    }
+
+    private search(): void {
+        if ( this.query !== '' ) {
+            this.$emit('searchProduct', this.query);
+        } else {
+            this.isValid = false;
+        }
     }
 
 }
@@ -61,8 +73,16 @@ export default class Search extends Vue {
                     top: 30px;
                 }
             }
+            label {
+                text-align: left;
+                width: calc(100% - 88px);
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
         }
         .input-group {
+            position: relative;
             &.md-focused {
                 label {
                     color: #fff;

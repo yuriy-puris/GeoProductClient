@@ -1,32 +1,21 @@
 <template>
   <div class="home">
     <div class="page-container">
-      <Search @searchProduct="searchProduct"/>
-      <ProductsGrid 
-        ref="productsGrid" />
+        <WelcomeQuiz />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Search from '@/components/Search.vue';
-import ProductsGrid from '@/components/Grid/ProductsGrid.vue';
-
+import WelcomeQuiz from '@/components/WelcomeQuiz.vue';
 
 @Component({
   components: {
-    Search,
-    ProductsGrid,
+    WelcomeQuiz,
   },
 })
 
-export default class Home extends Vue {
-  public query: string = '';
-
-  public searchProduct(searchQuery: string): void {
-    (this.$refs.productsGrid as any ).search(searchQuery);
-  }
-}
+export default class Home extends Vue {}
 
 </script>

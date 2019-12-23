@@ -1,10 +1,12 @@
 <template>
     <header id="header">
         <md-toolbar class="md-transparent">
-            <!-- <span class="md-title">GeoProduct</span> -->
             <router-link to="/"><strong class="md-title">GeoProduct</strong></router-link>
             <div class="md-toolbar-section-end">
-                {{ location }}
+                <div class="location-holder">
+                    <span>Ваше местоположение:</span>
+                    <p>{{ location }}</p>
+                </div>
             </div>
         </md-toolbar>
     </header>
@@ -31,6 +33,9 @@ export default class AppHeader extends Vue {
                 function error(error) {
                     console.log(error);
                 },
+                {enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000},
                );
         } else {
             console.log('geolocation not supported');
@@ -65,8 +70,19 @@ export default class AppHeader extends Vue {
 
 <style lang="scss">
 #header {
-    .md-title {
-        // color: #000
+    .md-toolbar {
+        justify-content: center;
+    }
+    .location-holder {
+        text-align: left;
+        span {
+            font-size: 11px;
+        }
+        p {
+            margin: 0;
+            font-size: 12px;
+            text-decoration: underline;
+        }
     }
 }
 </style>

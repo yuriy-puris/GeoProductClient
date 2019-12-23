@@ -7,8 +7,17 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
+    redirect: {name: 'home'},
+  },
+  {
+    path: '/home',
     name: 'home',
-    component: Home,
+    component: () => import(/* webpackChunkName: "about" */ '../views/Home.vue'),
+  },
+  {
+    path: '/search_product',
+    name: 'search_product',
+    component: () => import(/* webpackChunkName: "search_product" */ '../components/Grid/Index.vue'),
   },
   {
     path: '/about',
